@@ -10,6 +10,7 @@ import (
 func main() {
 	hub := ws.NewHub()
 	go hub.Run()
+	go ws.RedisListener(hub)
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("OK"))

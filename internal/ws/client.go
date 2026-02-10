@@ -1,17 +1,19 @@
 package ws
 
 import (
-	"log"
-	"github.com/gorilla/websocket"
 	"encoding/json"
-	"time"
+	"log"
 	"realtime-service/internal/events"
+	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 type Client struct {
 	hub  *Hub
 	conn *websocket.Conn
 	send chan []byte
+	id   string
 }
 
 func (c *Client) readPump() {

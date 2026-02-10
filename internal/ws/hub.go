@@ -1,5 +1,11 @@
 package ws
 
+import (
+	"encoding/json"
+	"log"
+	"realtime-service/internal/events"
+)
+
 type Hub struct {
 	clients    map[*Client]bool
 	broadcast  chan []byte
@@ -29,7 +35,18 @@ func (h *Hub) Run() {
 			}
 
 		case message := <-h.broadcast:
+			var event events.Event
+
+			if err := json.Unmarshal(message, &event); err != nil {
+				log.Println("Error unmarshalling event:", err)
+				continue
+			}
+
 			for client := range h.clients {
+				if event.SenderID != "" && client.id == event.SenderID {
+					log.Println("🚫 Filtrando eco para:", client.id)
+					continue
+				}
 				select {
 				case client.send <- message:
 				default:
